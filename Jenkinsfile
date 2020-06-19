@@ -19,5 +19,35 @@ pipeline {
                 """)
          }
       }
+      stage('Start test app') {
+         steps{
+            pwsh(script: """
+              #Start app line missing !
+            ./scripts/test_container.ps1
+            """)
+         }
+         post {
+            success {
+               echo "App Started successfully :)"
+            }
+            failure {
+               echo " App failed to start :("
+            }
+         }
+      }
+      stage ('Run Tests') {
+         steps {
+            pwsh(Script: """
+             pytest ./test/test_sample.py
+             """)
+         }
+      }
+      stage('Stop test app') {
+         steps {
+            pwsh(script: """
+             docker-compose down 
+             """ )
+         }
+      }
    }
 }
